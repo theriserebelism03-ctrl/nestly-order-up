@@ -1,16 +1,29 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useAuth } from '@/contexts/AuthContext';
+import { Navigate } from 'react-router-dom';
+import { CartProvider } from '@/contexts/CartContext';
+import StudentDashboard from './StudentDashboard';
+import ChefDashboard from './ChefDashboard';
+import AdminDashboard from './AdminDashboard';
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+export default function Index() {
+  const { user, role, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-12 h-12 rounded-2xl gradient-primary animate-pulse" />
+      </div>
+    );
+  }
+
+  if (!user) return <Navigate to="/auth" replace />;
+
+  if (role === 'chef') return <ChefDashboard />;
+  if (role === 'admin') return <AdminDashboard />;
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <CartProvider>
+      <StudentDashboard />
+    </CartProvider>
   );
-};
-
-const Index = PlaceholderIndex;
-
-export default Index;
+}
