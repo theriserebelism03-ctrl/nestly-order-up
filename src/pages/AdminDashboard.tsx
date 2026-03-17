@@ -197,6 +197,10 @@ export default function AdminDashboard() {
           ))}
         </TabsContent>
 
+        <TabsContent value="menu" className="mt-3">
+          <AdminMenuManager />
+        </TabsContent>
+
         <TabsContent value="nests" className="mt-3">
           <div className="grid grid-cols-4 gap-2">
             {nests.map(nest => (
