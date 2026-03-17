@@ -90,6 +90,21 @@ export default function StudentDashboard() {
         </div>
       </div>
 
+      {/* Nest notification banner */}
+      {nestNotification && (
+        <div className="mx-4 mt-2 p-3 rounded-xl bg-success/10 border border-success/30 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold text-success">🎉 Your order is ready!</p>
+            <p className="text-xs text-success/80">
+              Order #{nestNotification.orderNumber} — Pick it up from <span className="font-bold">Nest {String(nestNotification.nestNumber).padStart(2, '0')}</span>
+            </p>
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => setNestNotification(null)} className="text-success shrink-0">
+            Dismiss
+          </Button>
+        </div>
+      )}
+
       {/* Categories */}
       <div className="flex gap-2 px-4 py-4 overflow-x-auto">
         {categories.map(cat => (
