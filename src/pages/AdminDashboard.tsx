@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Shield, Users, ShoppingBag, IndianRupee, ScanLine, Box } from 'lucide-react';
+import { LogOut, Shield, Users, ShoppingBag, IndianRupee, ScanLine, Box, UtensilsCrossed } from 'lucide-react';
 import QRScanner from '@/components/QRScanner';
+import AdminMenuManager from '@/components/AdminMenuManager';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
