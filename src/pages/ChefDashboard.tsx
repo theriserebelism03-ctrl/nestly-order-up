@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { LogOut, ScanLine, ChefHat } from 'lucide-react';
+import NestManager from '@/components/NestManager';
 import QRScanner from '@/components/QRScanner';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
