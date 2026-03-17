@@ -20,6 +20,7 @@ export default function StudentDashboard() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [nestNotification, setNestNotification] = useState<{ orderNumber: number; nestNumber: number } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +28,27 @@ export default function StudentDashboard() {
       if (data) setMenuItems(data);
     });
   }, []);
+
+  // Listen for order nest assignment in realtime
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('student-order-updates')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'orders',
+        filter: `user_id=eq.${user.id}`,
+      }, (payload) => {
+        const updated = payload.new as Tables<'orders'>;
+        if (updated.nest_number && updated.status === 'ready') {
+          setNestNotification({ orderNumber: updated.order_number, nestNumber: updated.nest_number });
+          toast.success(`Your order #${updated.order_number} is ready at Nest ${String(updated.nest_number).padStart(2, '0')}!`);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
 
   const filtered = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
