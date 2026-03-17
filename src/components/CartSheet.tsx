@@ -26,13 +26,13 @@ export default function CartSheet() {
     try {
       // Stock validation
       const ids = items.map(i => i.id);
-      const { data: menuData } = await supabase.from('menu_items').select('id, stock_quantity, name').in('id', ids);
+      const { data: menuData } = await supabase.from('menu_items').select('id, name, stock_quantity').in('id', ids);
       if (menuData) {
         for (const item of items) {
-          const menuItem = menuData.find((m: any) => m.id === item.id);
-          if (!menuItem) { toast.error(`${item.name} is no longer available`); setPlacing(false); return; }
-          if ((menuItem as any).stock_quantity < item.quantity) {
-            toast.error(`Only ${(menuItem as any).stock_quantity} of ${item.name} available`);
+          const mi = menuData.find((m: any) => m.id === item.id);
+          if (!mi) { toast.error(`${item.name} is no longer available`); setPlacing(false); return; }
+          if ((mi as any).stock_quantity < item.quantity) {
+            toast.error(`Only ${(mi as any).stock_quantity} of ${item.name} available`);
             setPlacing(false);
             return;
           }
@@ -57,16 +57,15 @@ export default function CartSheet() {
       const { error: itemsErr } = await supabase.from('order_items').insert(orderItems);
       if (itemsErr) throw itemsErr;
 
-      // Decrement stock
+      // Decrement stock via server-side function
       for (const item of items) {
-        await supabase.rpc('has_role', { _user_id: user.id, _role: 'student' }); // just to ensure auth
-        // Use raw update to decrement
-        const menuItem = menuData?.find((m: any) => m.id === item.id);
-        const newStock = Math.max(0, ((menuItem as any)?.stock_quantity ?? 100) - item.quantity);
-        await supabase.from('menu_items').update({
-          stock_quantity: newStock,
-          available: newStock > 0,
-        }).eq('id', item.id);
+        const { error: stockErr } = await supabase.rpc('decrement_stock', {
+          p_item_id: item.id,
+          p_quantity: item.quantity,
+        });
+        if (stockErr) {
+          console.error('Stock decrement error:', stockErr.message);
+        }
       }
 
       clearCart();
