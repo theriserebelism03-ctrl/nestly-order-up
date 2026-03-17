@@ -169,6 +169,7 @@ export default function AdminDashboard() {
       <Tabs defaultValue="orders" className="px-4">
         <TabsList className="w-full">
           <TabsTrigger value="orders" className="flex-1">Orders</TabsTrigger>
+          <TabsTrigger value="menu" className="flex-1">Menu</TabsTrigger>
           <TabsTrigger value="nests" className="flex-1">Nests</TabsTrigger>
           <TabsTrigger value="users" className="flex-1">Users</TabsTrigger>
         </TabsList>
