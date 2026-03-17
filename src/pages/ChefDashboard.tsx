@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { LogOut, ScanLine, ChefHat } from 'lucide-react';
+import NestManager from '@/components/NestManager';
 import QRScanner from '@/components/QRScanner';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
@@ -167,6 +168,11 @@ export default function ChefDashboard() {
         {orders.length === 0 && (
           <p className="text-muted-foreground text-center py-12">No active orders</p>
         )}
+
+        {/* Nest Manager Section */}
+        <div className="mt-6 pt-6 border-t border-border">
+          <NestManager />
+        </div>
       </div>
     </div>
   );

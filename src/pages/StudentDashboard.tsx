@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, User, LogOut, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
 type MenuItem = Tables<'menu_items'>;
@@ -15,10 +16,11 @@ type MenuItem = Tables<'menu_items'>;
 const categories = ['All', 'Main', 'Snacks', 'Beverages'];
 
 export default function StudentDashboard() {
-  const { profile, signOut } = useAuth();
+  const { profile, user, signOut } = useAuth();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [nestNotification, setNestNotification] = useState<{ orderNumber: number; nestNumber: number } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +28,27 @@ export default function StudentDashboard() {
       if (data) setMenuItems(data);
     });
   }, []);
+
+  // Listen for order nest assignment in realtime
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('student-order-updates')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'orders',
+        filter: `user_id=eq.${user.id}`,
+      }, (payload) => {
+        const updated = payload.new as Tables<'orders'>;
+        if (updated.nest_number && updated.status === 'ready') {
+          setNestNotification({ orderNumber: updated.order_number, nestNumber: updated.nest_number });
+          toast.success(`Your order #${updated.order_number} is ready at Nest ${String(updated.nest_number).padStart(2, '0')}!`);
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user]);
 
   const filtered = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
@@ -66,6 +89,21 @@ export default function StudentDashboard() {
           />
         </div>
       </div>
+
+      {/* Nest notification banner */}
+      {nestNotification && (
+        <div className="mx-4 mt-2 p-3 rounded-xl bg-success/10 border border-success/30 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold text-success">🎉 Your order is ready!</p>
+            <p className="text-xs text-success/80">
+              Order #{nestNotification.orderNumber} — Pick it up from <span className="font-bold">Nest {String(nestNotification.nestNumber).padStart(2, '0')}</span>
+            </p>
+          </div>
+          <Button size="sm" variant="ghost" onClick={() => setNestNotification(null)} className="text-success shrink-0">
+            Dismiss
+          </Button>
+        </div>
+      )}
 
       {/* Categories */}
       <div className="flex gap-2 px-4 py-4 overflow-x-auto">

@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
 import { motion } from 'framer-motion';
@@ -18,7 +18,9 @@ const categoryEmoji: Record<string, string> = {
 };
 
 export default function MenuCard({ id, name, price, description, category }: MenuCardProps) {
-  const { addItem } = useCart();
+  const { items, addItem, updateQuantity } = useCart();
+  const cartItem = items.find(i => i.id === id);
+  const quantity = cartItem?.quantity || 0;
 
   return (
     <motion.div
@@ -34,13 +36,35 @@ export default function MenuCard({ id, name, price, description, category }: Men
         {description && <p className="text-xs text-muted-foreground truncate">{description}</p>}
         <p className="text-primary font-semibold text-sm mt-1">₹{price}</p>
       </div>
-      <Button
-        size="icon"
-        className="shrink-0 gradient-primary text-primary-foreground rounded-xl h-10 w-10"
-        onClick={() => addItem({ id, name, price })}
-      >
-        <Plus className="w-5 h-5" />
-      </Button>
+      {quantity === 0 ? (
+        <Button
+          size="sm"
+          className="shrink-0 gradient-primary text-primary-foreground rounded-xl px-5 h-9"
+          onClick={() => addItem({ id, name, price })}
+        >
+          ADD
+        </Button>
+      ) : (
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            size="icon"
+            variant="outline"
+            className="h-8 w-8 rounded-lg border-primary text-primary"
+            onClick={() => updateQuantity(id, quantity - 1)}
+          >
+            <Minus className="w-3.5 h-3.5" />
+          </Button>
+          <span className="w-7 text-center font-semibold text-sm">{quantity}</span>
+          <Button
+            size="icon"
+            variant="outline"
+            className="h-8 w-8 rounded-lg border-primary text-primary"
+            onClick={() => updateQuantity(id, quantity + 1)}
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }
