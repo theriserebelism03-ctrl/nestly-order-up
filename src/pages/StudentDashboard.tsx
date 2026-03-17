@@ -136,7 +136,16 @@ export default function StudentDashboard() {
           {activeCategory === 'All' ? 'Popular Items' : activeCategory}
         </h2>
         {filtered.map(item => (
-          <MenuCard key={item.id} id={item.id} name={item.name} price={item.price} description={item.description} category={item.category} />
+          <MenuCard
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            price={item.price}
+            description={item.description}
+            category={item.category}
+            image_url={(item as any).image_url}
+            stock_quantity={(item as any).stock_quantity ?? 100}
+          />
         ))}
         {filtered.length === 0 && (
           <p className="text-muted-foreground text-center py-8">No items found</p>
