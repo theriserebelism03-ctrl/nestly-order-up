@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogOut, Shield, Users, ShoppingBag, IndianRupee, ScanLine, Box } from 'lucide-react';
+import { LogOut, Shield, Users, ShoppingBag, IndianRupee, ScanLine, Box, UtensilsCrossed } from 'lucide-react';
 import QRScanner from '@/components/QRScanner';
+import AdminMenuManager from '@/components/AdminMenuManager';
 import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -168,6 +169,7 @@ export default function AdminDashboard() {
       <Tabs defaultValue="orders" className="px-4">
         <TabsList className="w-full">
           <TabsTrigger value="orders" className="flex-1">Orders</TabsTrigger>
+          <TabsTrigger value="menu" className="flex-1">Menu</TabsTrigger>
           <TabsTrigger value="nests" className="flex-1">Nests</TabsTrigger>
           <TabsTrigger value="users" className="flex-1">Users</TabsTrigger>
         </TabsList>
@@ -193,6 +195,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           ))}
+        </TabsContent>
+
+        <TabsContent value="menu" className="mt-3">
+          <AdminMenuManager />
         </TabsContent>
 
         <TabsContent value="nests" className="mt-3">

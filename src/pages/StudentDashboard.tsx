@@ -24,9 +24,18 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.from('menu_items').select('*').eq('available', true).then(({ data }) => {
-      if (data) setMenuItems(data);
-    });
+    const fetchMenu = async () => {
+      const { data } = await supabase.from('menu_items').select('*').eq('available', true);
+      if (data) setMenuItems(data as any);
+    };
+    fetchMenu();
+
+    // Realtime menu updates (stock changes)
+    const menuChannel = supabase
+      .channel('student-menu-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => { fetchMenu(); })
+      .subscribe();
+    return () => { supabase.removeChannel(menuChannel); };
   }, []);
 
   // Listen for order nest assignment in realtime
@@ -127,7 +136,16 @@ export default function StudentDashboard() {
           {activeCategory === 'All' ? 'Popular Items' : activeCategory}
         </h2>
         {filtered.map(item => (
-          <MenuCard key={item.id} id={item.id} name={item.name} price={item.price} description={item.description} category={item.category} />
+          <MenuCard
+            key={item.id}
+            id={item.id}
+            name={item.name}
+            price={item.price}
+            description={item.description}
+            category={item.category}
+            image_url={(item as any).image_url}
+            stock_quantity={(item as any).stock_quantity ?? 100}
+          />
         ))}
         {filtered.length === 0 && (
           <p className="text-muted-foreground text-center py-8">No items found</p>

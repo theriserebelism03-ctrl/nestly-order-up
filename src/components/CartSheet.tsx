@@ -24,6 +24,21 @@ export default function CartSheet() {
     if (!user || items.length === 0) return;
     setPlacing(true);
     try {
+      // Stock validation
+      const ids = items.map(i => i.id);
+      const { data: menuData } = await supabase.from('menu_items').select('id, name, stock_quantity').in('id', ids);
+      if (menuData) {
+        for (const item of items) {
+          const mi = menuData.find((m: any) => m.id === item.id);
+          if (!mi) { toast.error(`${item.name} is no longer available`); setPlacing(false); return; }
+          if ((mi as any).stock_quantity < item.quantity) {
+            toast.error(`Only ${(mi as any).stock_quantity} of ${item.name} available`);
+            setPlacing(false);
+            return;
+          }
+        }
+      }
+
       const pickupCode = generatePickupCode();
       const { data: order, error: orderErr } = await supabase
         .from('orders')
@@ -41,6 +56,17 @@ export default function CartSheet() {
       }));
       const { error: itemsErr } = await supabase.from('order_items').insert(orderItems);
       if (itemsErr) throw itemsErr;
+
+      // Decrement stock via server-side function
+      for (const item of items) {
+        const { error: stockErr } = await supabase.rpc('decrement_stock', {
+          p_item_id: item.id,
+          p_quantity: item.quantity,
+        });
+        if (stockErr) {
+          console.error('Stock decrement error:', stockErr.message);
+        }
+      }
 
       clearCart();
       toast.success('Order placed!');
