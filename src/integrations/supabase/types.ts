@@ -24,6 +24,7 @@ export type Database = {
           image_url: string | null
           name: string
           price: number
+          stock_quantity: number
         }
         Insert: {
           available?: boolean
@@ -34,6 +35,7 @@ export type Database = {
           image_url?: string | null
           name: string
           price: number
+          stock_quantity?: number
         }
         Update: {
           available?: boolean
@@ -44,6 +46,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           price?: number
+          stock_quantity?: number
         }
         Relationships: []
       }
