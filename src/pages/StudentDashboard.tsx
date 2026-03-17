@@ -24,9 +24,18 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.from('menu_items').select('*').eq('available', true).then(({ data }) => {
-      if (data) setMenuItems(data);
-    });
+    const fetchMenu = async () => {
+      const { data } = await supabase.from('menu_items').select('*').eq('available', true);
+      if (data) setMenuItems(data as any);
+    };
+    fetchMenu();
+
+    // Realtime menu updates (stock changes)
+    const menuChannel = supabase
+      .channel('student-menu-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'menu_items' }, () => { fetchMenu(); })
+      .subscribe();
+    return () => { supabase.removeChannel(menuChannel); };
   }, []);
 
   // Listen for order nest assignment in realtime
