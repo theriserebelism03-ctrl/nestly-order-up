@@ -16,7 +16,7 @@ type MenuItem = Tables<'menu_items'>;
 const categories = ['All', 'Main', 'Snacks', 'Beverages'];
 
 export default function StudentDashboard() {
-  const { profile, signOut } = useAuth();
+  const { profile, user, signOut } = useAuth();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
