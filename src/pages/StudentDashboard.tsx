@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, User, LogOut, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import type { Tables } from '@/integrations/supabase/types';
 
 type MenuItem = Tables<'menu_items'>;
