@@ -283,7 +283,7 @@ Sample Workflow
 
 
 
-Chef scans Nest QR<img width="1254" height="1254" alt="8af01a04-0ac5-4ae9-8921-d35f3510e45a" src="https://github.com/user-attachments/assets/31a9df11-9a29-4156-bcd2-fa84cf71c74c" />
+<img width="1254" height="1254" alt="8af01a04-0ac5-4ae9-8921-d35f3510e45a" src="https://github.com/user-attachments/assets/31a9df11-9a29-4156-bcd2-fa84cf71c74c" />
 
 
 
